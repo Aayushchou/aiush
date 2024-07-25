@@ -1,0 +1,32 @@
+[project]
+name = "aiush"
+version = "0.1.0"
+description = "Add your description here"
+dependencies = [
+    "fastapi>=0.111.1",
+    "uvicorn>=0.30.3",
+    "uvloop>=0.19.0",
+    "transformers>=4.43.2",
+    "torch==2.4.0+cu124",
+]
+readme = "README.md"
+requires-python = ">= 3.8"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[[tool.rye.sources]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu124"    
+
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aiush"]
