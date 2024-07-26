@@ -8,13 +8,21 @@ def run(model_path):
                                  device_map="auto",
                                  torch_dtype=torch.float16)
 
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    tokenizer = AutoTokenizer.from_pretrained("facebook/opt-350m")
     pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
-    prompt = pipe.tokenizer.apply_chat_template("Hows your day one", tokenize=False, add_generation_prompt=True)
+    prompt = [
+            {
+            "role": "system",
+            "content": "You are a loving boyfriend of your girlfriend Ruby, respond in a friendly and familiar way."
+            },
+            {"role": "user",
+             "content": "What do you wanna eat poopoo"
+             }
+            ]
     outputs = pipe(prompt,
                    max_new_tokens=256,
-                   do_sample=False,
+                   do_sample=True,
                    temperature=0.7,
                    top_k=50,
                    eos_token_id=pipe.tokenizer.eos_token_id,
