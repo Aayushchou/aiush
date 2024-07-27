@@ -30,6 +30,7 @@ class ChatParser:
         
         chat_list: List[ChatEntry] = []
         for match in matches:
+            
             chat_list.append({
                 'date': match.group('date'),
                 'time': match.group('time'),
@@ -44,21 +45,23 @@ class ChatParser:
         
         with open(output_path, "w") as f:
             for entry in data_dict:
-                sender = entry['sender']
-                message_content = entry['message']
                 
-                if sender == "Ruby":
-                    role = "user"
-                elif sender == "Aayush":
-                    role = "assistant"
-                else:
-                    continue  # Ignore messages from unknown senders
-                
-                messages = [{"role": "system", "content": "You are helpful"}]
-                messages.append({"role": role, "content": message_content})
-                
-                json_entry = {"messages": messages}
-                f.write(json.dumps(json_entry) + "\n")
+                if "omitted" not in entry["message"]:
+                    sender = entry['sender']
+                    message_content = entry['message']
+                    
+                    if sender == "Ruby":
+                        role = "user"
+                    elif sender == "Aayush":
+                        role = "assistant"
+                    else:
+                        continue  # Ignore messages from unknown senders
+                    
+                    messages = []
+                    messages.append({"role": role, "content": message_content})
+                    
+                    json_entry = {"messages": messages}
+                    f.write(json.dumps(json_entry) + "\n")
 
 def parse_file(file_path="data/_rubyChat.txt"):
         with open("data/_rubyChat.txt", "r") as f:

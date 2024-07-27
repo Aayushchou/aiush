@@ -13,6 +13,9 @@ PWD = os.getcwd()
 
 def train(dataset_path: str, model_path: str, output_path: str = "models"):
     
+    
+    output_path = os.path.join(PWD, output_path, model_path)
+    os.makedirs(output_path, exist_ok=True)
 
     dataset = load_dataset("json", data_files=dataset_path, split="train") 
     peft_config = LoraConfig(
@@ -35,7 +38,7 @@ def train(dataset_path: str, model_path: str, output_path: str = "models"):
 
     trainer = SFTTrainer(
         model,
-        max_seq_length=512,
+        max_seq_length=256,
         train_dataset=dataset,
         args=sft_config,
         peft_config=peft_config
@@ -47,4 +50,4 @@ def train(dataset_path: str, model_path: str, output_path: str = "models"):
 
 if __name__ == "__main__":
     logging.set_verbosity_error()
-    train("data/_rubyChat.jsonl", "facebook/opt-350m")
+    train("data/_rubyChat.jsonl", "meta-llama/Meta-Llama-3.1-8B-Instruct")

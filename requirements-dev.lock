@@ -85,6 +85,7 @@ httpx==0.27.0
     # via fastapi
 huggingface-hub==0.24.2
     # via accelerate
+    # via aiush
     # via datasets
     # via peft
     # via tokenizers
@@ -95,6 +96,8 @@ idna==3.4
     # via httpx
     # via requests
     # via yarl
+inquirerpy==0.3.4
+    # via huggingface-hub
 jinja2==3.1.3
     # via fastapi
     # via torch
@@ -163,8 +166,12 @@ pandas==2.2.2
     # via datasets
 peft==0.12.0
     # via aiush
+pfzy==0.3.4
+    # via inquirerpy
 platformdirs==4.2.2
     # via wandb
+prompt-toolkit==3.0.47
+    # via inquirerpy
 protobuf==5.27.2
     # via wandb
 psutil==6.0.0
@@ -282,6 +289,8 @@ wandb==0.17.5
     # via aiush
 watchfiles==0.22.0
     # via uvicorn
+wcwidth==0.2.13
+    # via prompt-toolkit
 websockets==12.0
     # via uvicorn
 xxhash==3.4.1
