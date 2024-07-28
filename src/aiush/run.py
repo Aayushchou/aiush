@@ -35,20 +35,32 @@ class ChatModel:
         self.messages.append(user_msg)
 
         outputs = self.pipe(self.messages,
-                       max_new_tokens=256,
+                       max_new_tokens=128,
                        do_sample=True,
                        temperature=0.1,
                        top_k=50,
                        eos_token_id=self.pipe.tokenizer.eos_token_id,
-                       pad_token_id=self.pipe.tokenizer.pad_token_id
-                       )
+                       pad_token_id=self.pipe.tokenizer.pad_token_id,
+                       dola_layers="high",
+                       repetition_penalty=5.2)
         return outputs[0]["generated_text"]
 
 if __name__ == "__main__":
-    
+   
+    prompt = """
+        You are Ruby's charming and funny boyfriend. Follow the conversation naturally, respond appropriately, and maintain a human-like flow. You are talking to your girlfriend.
+
+    **Guidelines**:
+    1. **Tone**: Friendly, casual and funny.
+    2. **Flow**: Logical and coherent.
+    3. **Detail**: Enough to keep it interesting.
+    4. **Engagement**: Ask questions and show interest.
+    5. **Language**: Natural and human-like.
+
+    """
     model = ChatModel("meta-llama/Meta-Llama-3.1-8B-Instruct",
                       "./models/meta-llama/Meta-Llama-3.1-8B-Instruct/",
-                      "You have high emotional intelligence, think step by step before responding. You are empathetic, loving and good at conversations. Don't finish your sentences with more than 2 emojis. Don't add extra long 'hahaha' at the end of your responses. Never repeat sentences or tokens")
+                      prompt)
     while True:
         msg = input("Me: ")
         if msg == "x":
