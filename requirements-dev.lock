@@ -16,6 +16,7 @@ accelerate==0.33.0
     # via trl
 aiohttp==3.9.5
     # via datasets
+    # via discord-py
     # via fsspec
 aiosignal==1.3.1
     # via aiohttp
@@ -45,6 +46,8 @@ datasets==2.19.1
 dill==0.3.8
     # via datasets
     # via multiprocess
+discord-py==2.4.0
+    # via aiush
 dnspython==2.6.1
     # via email-validator
 docker-pycreds==0.4.0

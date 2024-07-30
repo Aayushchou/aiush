@@ -1,5 +1,6 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from peft import PeftModel
+from aiush.preprocess import ConversationDatasetPreprocessor 
 import torch
 from trl import setup_chat_format
 
@@ -19,7 +20,7 @@ class ChatModel:
         tokenizer.pad_token = tokenizer.eos_token
 
         self.pipe = pipeline("text-generation", model=peft_model, tokenizer=tokenizer)
-
+        self.preprocessor = ConversationDatasetPreprocessor(tokenizer=tokenizer) 
         self.messages = [
                 {
                 "role": "system",
@@ -27,44 +28,33 @@ class ChatModel:
                 },
             ]
 
-    def run(self, message: str):
-        user_msg = {
-                "role": "user",
-                "content": message
-            }
-        self.messages.append(user_msg)
-
+    def run(self):
+        
         outputs = self.pipe(self.messages,
-                       max_new_tokens=128,
+                       max_new_tokens=64,
                        do_sample=True,
                        temperature=0.1,
                        top_k=50,
                        eos_token_id=self.pipe.tokenizer.eos_token_id,
                        pad_token_id=self.pipe.tokenizer.pad_token_id,
-                       dola_layers="high",
-                       repetition_penalty=5.2)
+                       repetition_penalty=1.2,
+                       no_repeat_ngram_size=4)
         return outputs[0]["generated_text"]
 
 if __name__ == "__main__":
    
     prompt = """
-        You are Ruby's charming and funny boyfriend. Follow the conversation naturally, respond appropriately, and maintain a human-like flow. You are talking to your girlfriend.
-
-    **Guidelines**:
-    1. **Tone**: Friendly, casual and funny.
-    2. **Flow**: Logical and coherent.
-    3. **Detail**: Enough to keep it interesting.
-    4. **Engagement**: Ask questions and show interest.
-    5. **Language**: Natural and human-like.
-
+    You are a human. Provide realistic and coherent responses. Keep answers concise. No emojis or hahaha"
     """
     model = ChatModel("meta-llama/Meta-Llama-3.1-8B-Instruct",
                       "./models/meta-llama/Meta-Llama-3.1-8B-Instruct/",
                       prompt)
     while True:
         msg = input("Me: ")
+        model.messages.append({"role": "user", "content": msg})
         if msg == "x":
             break
-        response = model.run(msg)
+        response = model.run()
+        model.messages.append({"role": "assistant", "content": response[-1]["content"]})
         print(response[-1]["content"])
 

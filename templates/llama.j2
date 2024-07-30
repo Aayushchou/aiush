@@ -1,0 +1,8 @@
+<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+Cutting Knowledge Date: December 2023
+Today Date: 26 Jul 2024
+<|eot_id|>
+{% for message in messages %}
+<|start_header_id|>{{ message.role }}<|end_header_id|>
+{{ message.content }}<|eot_id|>
+{% endfor %}

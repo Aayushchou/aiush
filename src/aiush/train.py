@@ -1,7 +1,7 @@
 from datasets import load_dataset
 from trl import SFTConfig, SFTTrainer, setup_chat_format
 from peft import LoraConfig
-from aiush.preprocess import ChatEntry
+from aiush.preprocess import ChatEntry, create_conversation_dataset 
 from transformers import AutoModelForCausalLM, AutoTokenizer, logging, BitsAndBytesConfig
 import json
 import torch
@@ -19,11 +19,7 @@ def train(dataset_path: str, model_path: str, output_path: str = "models"):
     os.makedirs(output_path, exist_ok=True)
 
     """load dataset"""
-    dataset = load_dataset("json", data_files=dataset_path, split='train')
-    
-    split_dataset = dataset.train_test_split(test_size=0.2)
-    train_dataset = split_dataset["train"]
-    test_dataset = split_dataset["test"]
+    train_dataset = create_conversation_dataset(dataset_path, model_path)
 
     """setup quantization config"""
     bnb_config = BitsAndBytesConfig(
@@ -44,11 +40,10 @@ def train(dataset_path: str, model_path: str, output_path: str = "models"):
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     tokenizer.padding_side = "right"
     tokenizer.pad_token = tokenizer.eos_token
-
    
     peft_config = LoraConfig(
         r=16,
-        lora_alpha=32,
+        lora_alpha=16,
         lora_dropout=0.05,
         bias="none",
             target_modules="all-linear",
@@ -60,14 +55,16 @@ def train(dataset_path: str, model_path: str, output_path: str = "models"):
                            num_train_epochs=1,
                            logging_steps=100,
                            bf16=True)
+
+
     trainer = SFTTrainer(
         model=model,
         tokenizer=tokenizer,
         max_seq_length=256,
         train_dataset=train_dataset,
-        eval_dataset=test_dataset,
         args=sft_config,
         peft_config=peft_config,
+        dataset_text_field="text",
         dataset_kwargs = {
             "add_special_tokens": False,
             "append_concat_token": False
