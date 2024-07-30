@@ -5,7 +5,7 @@ from aiush.run import ChatModel
 from dotenv import load_dotenv
 load_dotenv()
 
-
+MAX_MESSAGES = 50
 prompt = """
     You are a human. Provide realistic and coherent responses. Keep answers concise. No emojis or hahaha"
     """
@@ -35,6 +35,9 @@ async def on_message(message):
         }
         chatbot.messages.append(user_msg)
 
+        if len(chatbot.messages) >= MAX_MESSAGES:
+            chatbot.messages.pop(0)
+            
         response = chatbot.run()
         assistant_msg = {
             "role": "assistant",
